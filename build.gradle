@@ -7,7 +7,7 @@ plugins {
     id 'idea'
 
     // NeoForged 开发插件
-    id 'net.neoforged.moddev' version '2.0.95'
+    id 'net.neoforged.moddev' version '2.0.141'
 
     // shadow 插件
     id 'com.gradleup.shadow' version '8.3.6'
@@ -19,7 +19,7 @@ tasks.named('wrapper', Wrapper).configure {
 }
 
 // 需要 Java 21 版本
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 // 模组相关信息
 version = mod_version
@@ -136,12 +136,6 @@ neoForge {
     // NeoForge 版本信息
     version = project.neo_version
 
-    // 反混淆表
-    parchment {
-        mappingsVersion = project.parchment_mappings_version
-        minecraftVersion = project.parchment_minecraft_version
-    }
-
     // 运行部分
     runs {
         client {
@@ -167,7 +161,7 @@ neoForge {
         }
 
         data {
-            data()
+            clientData()
             gameDirectory = project.file('run/data')
             programArguments.addAll '--mod', project.mod_id, '--all',
                     '--output', file('src/generated/resources/').getAbsolutePath(),
@@ -407,4 +401,10 @@ idea {
 java {
     // 编译源码文件，方便发布 maven
     withSourcesJar()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+    options.compilerArgs << '-Xmaxerrs' << '20000'
+    options.compilerArgs << "-Xlint:-removal"
 }
